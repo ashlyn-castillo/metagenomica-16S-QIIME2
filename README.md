@@ -2,7 +2,7 @@
 
 **Diana Ashlyn Castillo Abad — proyecto de aprendizaje, noviembre de 2026.**
 
-La práctica se realizó durante el curso: Análisis bioinformático de metagenómica bacteriana 16S, impartido por Alex Andrés Jarrín Jurado en Flyteek. El repositorio documenta la ejecución y adaptación de los procedimientos del curso en R y QIIME 2, este último en Ubuntu mediante WSL en Windows. Los datos corresponden a una actividad de formación y no a un estudio experimental propio.
+La práctica se realizó durante el curso: Análisis bioinformático de metagenómica bacteriana 16S, impartido por Alex Andrés Jarrín Jurado en Flyteek. En este trabajo se describe la ejecución y adaptación de los procedimientos del curso en R y QIIME 2, este último en Ubuntu mediante WSL en Windows. Los datos corresponden a una actividad del curso y no a un estudio experimental propio.
 
 ## Objetivo y alcance
 
