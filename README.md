@@ -2,7 +2,7 @@
 
 **Diana Ashlyn Castillo Abad — proyecto de aprendizaje, noviembre de 2026.**
 
-Práctica realizada durante el curso «Análisis bioinformático de metagenómica bacteriana 16S», Flyteek, impartido por Alex Andrés Jarrín Jurado. Este repositorio documenta la ejecución y adaptación del flujo docente a Ubuntu mediante WSL en Windows.
+Práctica realizada durante el curso: Análisis bioinformático de metagenómica bacteriana 16S, Flyteek, impartido por Alex Andrés Jarrín Jurado. Este repositorio documenta la ejecución y adaptación del flujo docente a Ubuntu mediante WSL en Windows.
 
 ## Objetivo y alcance
 
