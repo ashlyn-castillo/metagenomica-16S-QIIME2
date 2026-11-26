@@ -2,7 +2,7 @@
 
 **Diana Ashlyn Castillo Abad — proyecto de aprendizaje, noviembre de 2026.**
 
-Práctica realizada durante el curso «Análisis bioinformático de metagenómica bacteriana 16S», Flyteek, impartido por Alex Andrés Jarrín Jurado. Este repositorio documenta la ejecución y adaptación del flujo docente a Ubuntu mediante WSL en Windows. No presenta un estudio experimental propio ni atribuye a la estudiante la creación de DADA2 o QIIME 2. Organización del código y redacción asistidas por IA; ejecución realizada por la estudiante.
+Práctica realizada durante el curso «Análisis bioinformático de metagenómica bacteriana 16S», Flyteek, impartido por Alex Andrés Jarrín Jurado. Este repositorio documenta la ejecución y adaptación del flujo docente a Ubuntu mediante WSL en Windows. No presenta un estudio experimental propio ni atribuye a la estudiante la creación de DADA2 o QIIME 2.
 
 ## Objetivo y alcance
 
