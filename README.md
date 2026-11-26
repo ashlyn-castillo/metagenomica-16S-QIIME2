@@ -1,135 +1,72 @@
-# Análisis de amplicones del gen 16S rRNA: región V4
+# Análisis de amplicones bacterianos 16S V4 con R y QIIME 2
 
-**Diana Ashlyn Castillo Abad**  
-Práctica de bioinformática · Noviembre de 2026
+**Diana Ashlyn Castillo Abad — proyecto de aprendizaje, noviembre de 2026.**
 
-## Descripción
+La práctica se realizó durante el curso «Análisis bioinformático de metagenómica bacteriana 16S», impartido por Alex Andrés Jarrín Jurado en Flyteek. El repositorio documenta la ejecución y adaptación de los procedimientos del curso en R y QIIME 2, este último en Ubuntu mediante WSL en Windows. Los datos corresponden a una actividad de formación y no a un estudio experimental propio.
 
-Este repositorio reúne los procedimientos y resultados del análisis de cinco muestras del curso «Análisis bioinformático de metagenómica bacteriana 16S», impartido por Alex Andrés Jarrín Jurado en Flyteek. El procesamiento se realizó con DADA2 en R y QIIME 2. Se documentan el filtrado de lecturas, la inferencia de variantes de secuencia de amplicón (ASVs), la asignación taxonómica, la reconstrucción filogenética y el cálculo de diversidad.
+## Objetivo y alcance
 
-Los datos corresponden a las muestras M1–M5 proporcionadas para la práctica. La información disponible no permite establecer su procedencia biológica ni definir grupos de comparación. El análisis se presenta como un ejercicio de formación.
+El objetivo fue procesar cinco pares de archivos FASTQ de las muestras didácticas M1–M5 mediante control de calidad, inferencia de ASVs, asignación taxonómica, reconstrucción filogenética y análisis de diversidad. La procedencia biológica de las muestras y las condiciones de redistribución del conjunto no están documentadas en los archivos disponibles. El repositorio no incluye los FASTQ ni los materiales completos del curso.
 
-## Objetivo
+## Flujo ejecutado
 
-Obtener una tabla de ASVs a partir de lecturas pareadas de la región V4 del gen 16S rRNA y describir la composición taxonómica y la diversidad de las cinco muestras.
+FASTQ → manifiesto → importación → calidad → DADA2 → tabla y secuencias de ASVs → clasificación SILVA → barras taxonómicas → MAFFT/FastTree → rarefacción → diversidad alfa y beta → PCoA.
 
-## Procedimiento
+Parámetros DADA2: truncamiento forward/reverse 240/160; trim-left 0/0; maxEE 2/2; cuatro hilos. Clasificador recibido: `SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza`. Rarefacción exploratoria de 100 a 3700 lecturas, 20 profundidades y 10 iteraciones. Core metrics con 3000 lecturas por muestra.
 
-### Procesamiento de secuencias
+## Resultados documentados
 
-En ambas rutas se utilizó DADA2 para filtrar las lecturas, estimar los errores, inferir ASVs, unir los pares y eliminar quimeras. Las secuencias forward y reverse se truncaron a 240 y 160 bases, respectivamente, con un máximo de dos errores esperados por lectura. En QIIME 2 se estableció `trim-left` en 0 para ambas direcciones y se utilizaron cuatro hilos.
+- Cinco muestras, **158 ASVs y 37 713 lecturas finales**.
+- Lecturas finales M1–M5: 5015, 16822, 5482, 3715 y 6679.
+- Retención global: aproximadamente 84,40 %.
+- Riqueza en la tabla completa: 101, 135, 69, 87 y 91 ASVs.
+- Los conteos finales coinciden con la ejecución previa de DADA2 en R. La coincidencia de los conteos no establece la equivalencia de todos los objetos o métodos.
+- Bray–Curtis tras rarefacción: menor distancia M3–M5 (~0,277), mayor M1–M3 (~0,483).
 
-La ruta de QIIME 2 incluyó la preparación del manifiesto, la importación de archivos FASTQ comprimidos y la inspección de la calidad. En R se emplearon los archivos sin comprimir. Los patrones de búsqueda del script de R excluyen las copias `.gz` para evitar la selección de duplicados.
+`resultados/seguimiento_lecturas.csv` transcribe los conteos verificados en las capturas de la ejecución; no es una exportación automática del artefacto. Las exportaciones realizadas desde R se encuentran en `resultados/R/`: seguimiento de lecturas, diversidad alfa, riqueza, taxonomía, cuatro matrices de distancia, cinco figuras PNG, un árbol PDF y las versiones de R. Los artefactos QIIME 2 no están incluidos.
 
-### Asignación taxonómica
+## Reproducción
 
-En R se utilizó SILVA 138.2. En QIIME 2 se aplicó el clasificador `SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza`. Los resultados de cada ruta se conservan por separado debido a las diferencias entre las versiones de referencia y los procedimientos de clasificación.
-
-### Filogenia y diversidad
-
-En QIIME 2, las secuencias se alinearon con MAFFT y el árbol se obtuvo con FastTree. Las curvas de rarefacción se calcularon entre 100 y 3700 lecturas, con 20 profundidades y 10 iteraciones. El análisis de diversidad mediante `core-metrics-phylogenetic` se realizó a 3000 lecturas por muestra.
-
-En R, la reconstrucción filogenética incluyó alineamiento, un árbol inicial de unión de vecinos y optimización con el modelo GTR. Se utilizó una categoría de tasas, sin distribución gamma, y enraizamiento por punto medio. No se calculó soporte mediante bootstrap. El árbol se incorporó al objeto de phyloseq para obtener las distancias UniFrac ponderada y no ponderada.
-
-También se calcularon las distancias Bray–Curtis y Jaccard. La ordenación se representó mediante análisis de coordenadas principales (PCoA).
-
-## Resultados
-
-El procesamiento produjo **158 ASVs y 37 713 lecturas después de eliminar quimeras**, con una retención global del 84,40 %.
-
-| Muestra | Lecturas de entrada | Lecturas finales | ASVs observadas en la tabla completa |
-| --- | ---: | ---: | ---: |
-| M1 | 5869 | 5015 | 101 |
-| M2 | 19 620 | 16 822 | 135 |
-| M3 | 6758 | 5482 | 69 |
-| M4 | 4448 | 3715 | 87 |
-| M5 | 7989 | 6679 | 91 |
-
-Los conteos finales de DADA2 coincidieron entre R y QIIME 2. Esta coincidencia se refiere al número de lecturas y ASVs; no establece que todos los objetos, asignaciones taxonómicas o cálculos posteriores sean idénticos.
-
-En QIIME 2, después de rarefactar a 3000 lecturas, la distancia Bray–Curtis fue menor entre M3 y M5 (0,277) y mayor entre M1 y M3 (0,483). Estas comparaciones describen diferencias entre muestras; no constituyen pruebas de efectos de un tratamiento.
-
-## Archivos del repositorio
-
-| Ubicación | Contenido |
-| --- | --- |
-| `scripts/` | Cinco scripts de R y un script de QIIME 2 |
-| `reproducibilidad/` | Entorno de conda y versiones de QIIME 2 |
-| `resultados/R/` | Tablas, matrices de distancia, figuras y versiones de R |
-| `resultados/seguimiento_lecturas.csv` | Conteos transcritos de las salidas de QIIME 2 registradas durante la ejecución |
-| `CAMBIOS.md` | Registro de modificaciones del código y la documentación |
-
-Las exportaciones de R comprenden el seguimiento de lecturas, la diversidad alfa, la riqueza observada, la taxonomía, cuatro matrices de distancia, cinco figuras PNG, un árbol PDF y la información de la sesión. Los archivos FASTQ, los clasificadores y los artefactos de QIIME 2 no se distribuyen en este repositorio.
-
-## Ejecución
-
-### QIIME 2
-
-1. Preparar el entorno QIIME 2 2026.10. El archivo YAML registra las dependencias utilizadas en Ubuntu mediante WSL en Windows.
-2. Disponer de los cinco pares FASTQ comprimidos, con nombres desde `M1_L001_R1_001.fastq.gz` hasta `M5_L001_R2_001.fastq.gz`, y del clasificador indicado.
-3. Crear un directorio de trabajo vacío y ejecutar el script con las rutas de entrada:
+1. Se crea o activa el entorno QIIME 2 2026.10. El archivo YAML registra el entorno Linux utilizado; la instalación puede variar entre sistemas.
+2. Se obtienen, por una vía autorizada, los pares originales comprimidos, con nombres `M1_L001_R1_001.fastq.gz` hasta `M5_L001_R2_001.fastq.gz` y el clasificador indicado.
+3. Se crea un directorio de trabajo vacío y, desde él, se ejecuta el script con las variables `RAW_DIR` y `CLASSIFIER` definidas mediante rutas absolutas. Los archivos de entrada se conservan.
 
 ```bash
 conda activate rachis-qiime2-2026.10
 RAW_DIR=/ruta/a/fastq CLASSIFIER=/ruta/al/clasificador.qza bash /ruta/al/repositorio/scripts/qiime2_v4.sh
 ```
 
-### R
+El script organiza comandos observados en el historial. Se comprobó su sintaxis con `bash -n`; **esta versión reorganizada no se ejecutó de extremo a extremo**. La rarefacción aleatoria puede producir cifras diferentes al repetirla. Las versiones se registran en `reproducibilidad/`.
 
-Definir las rutas de los FASTQ sin comprimir y de las referencias SILVA:
+## Interpretación y límites
 
-```r
-Sys.setenv(
-  RAW_DIR = "C:/ruta/a/fastq",
-  SILVA_TRAIN = "C:/ruta/al/archivo_de_entrenamiento_SILVA",
-  SILVA_SPECIES = "C:/ruta/al/archivo_de_especies_SILVA"
-)
-```
+Una ASV no equivale necesariamente a una especie. Los conteos de lecturas no representan cantidades de células ni permiten determinar viabilidad, actividad o función. No se dispone de grupos experimentales documentados para evaluar efectos de tratamientos. La taxonomía de esta ejecución usa SILVA 144 y no es directamente intercambiable con SILVA 138.2 utilizada en R. El árbol de QIIME 2 se construyó con MAFFT/FastTree y difiere del flujo filogenético de R.
 
-Ejecutar los scripts en una misma sesión y en el siguiente orden:
+## Estado y próximos pasos
 
-1. `01_dada2_R.R`: procesamiento de lecturas y asignación taxonómica.
-2. `02_graficos_R.R`: construcción del objeto de phyloseq y representación taxonómica.
-3. `03_diversidad_R.R`: diversidad alfa, rarefacción, distancias y PCoA.
-4. `04_arbol_UniFrac_R.R`: reconstrucción filogenética y cálculo de UniFrac.
-5. `05_exportar_resultados_R.R`: exportación de los objetos calculados. En Windows, seleccionar la carpeta del repositorio cuando se abra el cuadro de diálogo.
+La práctica V4 se ejecutó y las exportaciones de R se incorporaron al repositorio. Queda pendiente comprobar los scripts reorganizados mediante una ejecución completa desde una sesión limpia. Las condiciones de reutilización del material docente no están documentadas. El ejercicio independiente V3–V4 no forma parte de estos resultados. Los scripts de R se organizaron en cinco etapas (01–05). Los bloques de árbol y UniFrac se reconstruyeron a partir de las instrucciones y salidas de la sesión. El modelo de R utilizó una categoría de tasas (sin gamma); no se calculó bootstrap.
 
-Los procedimientos se ejecutaron durante la práctica guiada. Los scripts publicados se reorganizaron después de esa ejecución; su funcionamiento conjunto aún no se ha comprobado desde una sesión limpia. Se verificó la sintaxis del script de QIIME 2 con `bash -n`. La rarefacción incorpora muestreo aleatorio, por lo que sus resultados pueden variar entre ejecuciones.
+## Reconocimientos y referencias
 
-## Figuras
+- Curso Flyteek y guía docente `QIIME2_16S_V4_pipeline.pdf`.
+- QIIME 2: https://qiime2.org/
+- DADA2: https://benjjneb.github.io/dada2/
+- SILVA: https://www.arb-silva.de/
 
-### Composición taxonómica por filo
+No se asigna una licencia de redistribución a material de terceros cuyo permiso no esté documentado.
 
-![Composición taxonómica por filo](resultados/R/g_filos.png)
+## Ruta en R
 
-Abundancia relativa de lecturas por filo en M1–M5, según la asignación con SILVA 138.2 en R.
+Se definen `RAW_DIR` (FASTQ sin comprimir), `SILVA_TRAIN` y `SILVA_SPECIES` mediante `Sys.setenv()`. Los scripts 01, 02 y 03 se ejecutan en ese orden dentro de una misma sesión. El bloque 04 reconstruye el árbol con el modelo GTR y una categoría de tasas, y calcula las distancias UniFrac. El bloque 05 exporta objetos ya calculados sin repetir ese procesamiento. Las etiquetas ASV abreviadas del árbol son identificadores de presentación, no nombres de especies.
 
-### Ordenación de las muestras
+Se ajustaron los patrones FASTQ para excluir las copias `.gz`, se retiró el bloque que usaba `ps` antes de construirlo y se separó la filogenia del pipeline inicial. No se incorporan categorías Control/Tratado, dado que no se dispone de un diseño experimental que las respalde. Estas adaptaciones requieren validación en una ejecución limpia; la evidencia disponible corresponde a los resultados observados durante la práctica guiada.
 
-![PCoA de Bray–Curtis](resultados/R/PCoA_Bray_Curtis.png)
+## Figuras exportadas en R
 
-Representación de las muestras en los dos primeros ejes de la PCoA calculada en R a partir de Bray–Curtis.
+![Composición por filos](resultados/R/g_filos.png)
 
-Se incluyen las figuras de [géneros](resultados/R/g_generos.png), [taxones principales](resultados/R/g_top10.png), [mapa de calor](resultados/R/g_heatmap.png) y [árbol de 20 ASVs](resultados/R/arbol_20_ASVs.pdf). Las etiquetas abreviadas del árbol identifican ASVs; no representan nombres de especies.
+![Ordenación PCoA con Bray–Curtis](resultados/R/PCoA_Bray_Curtis.png)
 
-## Alcance de la interpretación
+Otras figuras: [géneros](resultados/R/g_generos.png), [taxones principales](resultados/R/g_top10.png), [mapa de calor](resultados/R/g_heatmap.png) y [árbol de 20 ASVs](resultados/R/arbol_20_ASVs.pdf).
 
-La diversidad alfa exportada desde R se calculó sobre la tabla completa y utiliza el logaritmo natural para Shannon. En el análisis de QIIME 2 se empleó una tabla rarefactada a 3000 lecturas y Shannon en base 2. La profundidad de muestreo y la base del logaritmo deben considerarse antes de comparar los valores.
-
-Las ASVs representan variantes de secuencia y no equivalen necesariamente a especies. Las proporciones de lecturas describen la composición del conjunto secuenciado; no permiten determinar el número de células, la viabilidad, la actividad metabólica o la función de los organismos. La ausencia de metadatos de procedencia y de grupos experimentales limita el análisis a la descripción de las cinco muestras.
-
-El ejercicio de la región V3–V4 corresponde a otra actividad y no forma parte de estos resultados.
-
-## Reconocimientos y apoyo utilizado
-
-Los datos y procedimientos de partida proceden del curso de Flyteek y de la guía `QIIME2_16S_V4_pipeline.pdf`, de Alex Andrés Jarrín Jurado. Las condiciones de redistribución de los materiales docentes no están documentadas en el repositorio; no se les asigna una licencia.
-
-Se utilizó ChatGPT como apoyo para revisar y organizar scripts, resolver errores y redactar la documentación. La autora ejecutó los análisis durante la práctica guiada del curso.
-
-## Software y bases de referencia
-
-- [QIIME 2](https://qiime2.org/)
-- [DADA2](https://benjjneb.github.io/dada2/)
-- [SILVA](https://www.arb-silva.de/)
-
-Las versiones del entorno de QIIME 2 se encuentran en `reproducibilidad/`; las de R y sus paquetes, en `resultados/R/versiones_R.txt`.
+La diversidad alfa exportada desde R se calculó sobre la tabla completa; el índice de Shannon utiliza el logaritmo natural. QIIME 2 utiliza aquí una tabla rarefactada a 3000 lecturas y Shannon en base 2; los valores no deben compararse directamente. El árbol en R utiliza GTR, una categoría de tasas, sin gamma ni bootstrap, y enraizamiento por punto medio.
